@@ -104,4 +104,4 @@ try {
 
 If you liked this project, please give it a ⭐ in [**GitHub**](https://github.com/siquylee/google-translate-api).
 
-> Credits to [k3rn31p4nic](https://github.com/k3rn31p4nic) for writing the Node.JS version of this library. I ported this to App Script without using external libraries.
+> Credits to [k3rn31p4nic](https://github.com/k3rn31p4nic) for writing the Node.JS version of this library. I ported this to Apps Script without using external libraries.

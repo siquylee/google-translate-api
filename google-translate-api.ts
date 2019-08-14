@@ -210,9 +210,9 @@ const languages: any = {
  * @returns {string|boolean} The ISO 639-1 code of the language or null if the
  * language is not supported
  */
-function getISOCode(language: string): string | boolean {
+function getISOCode(language: string): string {
     if (!language) {
-        return false;
+        return null;
     }
 
     language = language.toLowerCase();
@@ -222,7 +222,7 @@ function getISOCode(language: string): string | boolean {
 
     let keys = Object.keys(languages).filter((key) => {
         return typeof languages[key] !== 'string'
-            ? false
+            ? null
             : languages[key].toLowerCase() === language;
     });
 
@@ -238,18 +238,40 @@ function isSupported(language: string) {
     return Boolean(getISOCode(language));
 }
 
+export interface TranslateOption {
+    from: string;
+    to: string;
+    raw?: boolean;
+}
+
+export interface TranslateResult {
+    text: string;
+    from: {
+        text: {
+            autoCorrected: boolean;
+            value: string;
+            didYouMean: boolean;
+        };
+        language: {
+            didYouMean: boolean;
+            iso: string;
+        }
+    };
+    raw: string;
+}
+
 /**
  * @function translate
  * @param {String} text The text to be translated.
  * @param {Object} options The options object for the translator.
  * @returns {Object} The result containing the translation.
  */
-function translate(text: string, options: any): any {
-    if (typeof options !== 'object') {
-        options = {};
-    }
-    text = String(text);
-
+export function translate(text: string,
+    options: TranslateOption = {
+        from: 'auto',
+        to: 'en',
+        raw: false
+    }): TranslateResult {
     // Check if a lanugage is in supported; if not, throw an error object.
     let error: any;
     [options.from, options.to].forEach((lang) => {
@@ -262,19 +284,6 @@ function translate(text: string, options: any): any {
     if (error) {
         throw error;
     }
-
-    // If options object doesn't have 'from' language, set it to 'auto'.
-    if (!options.hasOwnProperty('from')) {
-        options.from = 'auto';
-    }
-
-    // If options object doesn't have 'to' language, set it to 'en'.
-    if (!options.hasOwnProperty('to')) {
-        options.to = 'en';
-    }
-
-    // If options object has a 'raw' property evaluating to true, set it to true.
-    options.raw = Boolean(options.raw);
 
     // Get ISO 639-1 codes for the 
     options.from = getISOCode(options.from);
@@ -333,7 +342,7 @@ function translate(text: string, options: any): any {
 
     // Request translation from Google Translate.
     let response = UrlFetchApp.fetch(url, requestOptions).getContentText();
-    let result = {
+    let result: TranslateResult = {
         text: '',
         from: {
             language: {

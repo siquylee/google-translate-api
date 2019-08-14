@@ -5,6 +5,7 @@
  *
  * Everything between 'BEGIN' and 'END' was copied from the script above.
  */
+Object.defineProperty(exports, "__esModule", { value: true });
 // BEGIN
 function zr(a) {
     var b;
@@ -201,7 +202,7 @@ var languages = {
  */
 function getISOCode(language) {
     if (!language) {
-        return false;
+        return null;
     }
     language = language.toLowerCase();
     if (language in languages) {
@@ -209,7 +210,7 @@ function getISOCode(language) {
     }
     var keys = Object.keys(languages).filter(function (key) {
         return typeof languages[key] !== 'string'
-            ? false
+            ? null
             : languages[key].toLowerCase() === language;
     });
     return keys[0] || null;
@@ -229,11 +230,12 @@ function isSupported(language) {
  * @returns {Object} The result containing the translation.
  */
 function translate(text, options) {
+    if (options === void 0) { options = {
+        from: 'auto',
+        to: 'en',
+        raw: false
+    }; }
     var _a;
-    if (typeof options !== 'object') {
-        options = {};
-    }
-    text = String(text);
     // Check if a lanugage is in supported; if not, throw an error object.
     var error;
     [options.from, options.to].forEach(function (lang) {
@@ -246,16 +248,6 @@ function translate(text, options) {
     if (error) {
         throw error;
     }
-    // If options object doesn't have 'from' language, set it to 'auto'.
-    if (!options.hasOwnProperty('from')) {
-        options.from = 'auto';
-    }
-    // If options object doesn't have 'to' language, set it to 'en'.
-    if (!options.hasOwnProperty('to')) {
-        options.to = 'en';
-    }
-    // If options object has a 'raw' property evaluating to true, set it to true.
-    options.raw = Boolean(options.raw);
     // Get ISO 639-1 codes for the 
     options.from = getISOCode(options.from);
     options.to = getISOCode(options.to);
@@ -356,3 +348,4 @@ function translate(text, options) {
     }
     return result;
 }
+exports.translate = translate;
